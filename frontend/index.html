@@ -1,1 +1,94 @@
-dchvkdsvcsdvcmavmmjcd
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MED</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="index.js"></script>
+    
+</head>
+<body class="bg-black text-white m-0">
+
+    <!-- Hero (restored) -->
+    <section class="position-relative w-100" style="min-height:100vh;overflow:hidden;">
+        <img src="./asset/image.png" alt="Hero" class="w-100 h-100" style="object-fit:cover;object-position:center;display:block;">
+        <!-- Dark overlay & gradient bottom -->
+        <div class="position-absolute top-0 start-0 w-100 h-100" style="background:rgba(0,0,0,.45);"></div>
+        <div class="position-absolute bottom-0 start-0 w-100" style="height:28vh;background:linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0));"></div>
+        <!-- Centered content -->
+        <div class="position-absolute top-50 start-50 translate-middle text-center px-3" style="max-width:900px;">
+            <h1 class="fw-bold display-4 display-md-3 mb-3">Discover Your Next Favorite Movie</h1>
+            <p class="fw-normal fs-5 fs-md-4 mb-4">Explore thousands of movies, create your watch later list, and never miss a great film.</p>
+            <a href="#featured" class="btn btn-primary me-2 px-4 py-2">Get Started</a>
+            <a href="#genres" class="btn btn-outline-light px-4 py-2">Learn More</a>
+        </div>
+    </section>
+
+    <!-- Navbar (kept) -->
+        <nav class="navbar navbar-expand-lg" style="background:linear-gradient(90deg,#1b1525,#171a27 60%,#12151b);">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand text-white fw-bold d-flex align-items-center gap-2" href="#">
+                    <span class="bg-primary bg-gradient rounded-3 d-inline-flex align-items-center justify-content-center" style="width:38px;height:38px;">
+                        <i class="bi bi-film fs-5 text-white"></i>
+                    </span>
+                    Movie Explorer
+                </a>
+                <div class="d-flex align-items-center gap-2">
+                    <form class="d-none d-md-flex" role="search">
+                        <input class="form-control form-control-sm bg-dark border-0 text-white" style="min-width:220px;" type="search" placeholder="Search" aria-label="Search">
+                    </form>
+                    <button class="btn btn-outline-light btn-sm d-md-none" type="button"><i class="bi bi-search"></i></button>
+                    <button class="btn btn-primary bg-gradient fw-semibold"><i class="bi bi-bookmark me-1"></i> Watch Later</button>
+                </div>
+            </div>
+        </nav>
+
+            <main class="container py-4">
+            <!-- Genre Filter -->
+                <div id="genres" class="mb-4">
+                <h6 class="text-uppercase small fw-semibold mb-2">Filter by Genre</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-sm btn-primary rounded-pill px-3">All</button>
+                    <button class="btn btn-sm btn-outline-secondary rounded-pill px-3">Action</button>
+                    <button class="btn btn-sm btn-outline-secondary rounded-pill px-3">Drama</button>
+                    <button class="btn btn-sm btn-outline-secondary rounded-pill px-3">Comedy</button>
+                </div>
+            </div>
+
+            <!-- Featured Movies -->
+            <section id="featured" class="mb-4">
+                <h4 class="fw-bold mb-4">Featured Movies</h4>
+                <div class="row g-4">
+                    <!-- Card 1 -->
+                    <div class="col-6 col-md-3">
+                        <div class="card bg-dark border-0 rounded-4 h-100 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1535016120720-40c646be5580?auto=format&fit=crop&w=600&q=60" class="w-100" style="aspect-ratio:3/4;object-fit:cover;" alt="Poster 1">
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="col-6 col-md-3">
+                        <div class="card bg-dark border-0 rounded-4 h-100 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=600&q=60" class="w-100" style="aspect-ratio:3/4;object-fit:cover;" alt="Poster 2">
+                        </div>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="col-6 col-md-3">
+                        <div class="card bg-dark border-0 rounded-4 h-100 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=600&q=60" class="w-100" style="aspect-ratio:3/4;object-fit:cover;" alt="Poster 3">
+                        </div>
+                    </div>
+                    <!-- Card 4 -->
+                    <div class="col-6 col-md-3">
+                        <div class="card bg-dark border-0 rounded-4 h-100 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1507924538820-ede94a04019d?auto=format&fit=crop&w=600&q=60" class="w-100" style="aspect-ratio:3/4;object-fit:cover;" alt="Poster 4">
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+</body>
+</html>
