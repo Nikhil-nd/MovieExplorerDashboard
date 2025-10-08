@@ -1,0 +1,34 @@
+/* Theme & Base */
+:root {
+    --app-bg:#0d0f12;
+    --app-surface:#151a21;
+    --app-accent:#7b3ff3;
+}
+body { background:var(--app-bg); font-family: system-ui,'Segoe UI',Roboto,Arial,sans-serif; }
+
+/* Hero */
+.hero-overlay { background:rgba(0,0,0,.45); }
+.hero-fade { height:30vh; background:linear-gradient(to top, rgba(13,15,18,0.9), rgba(13,15,18,0)); }
+.scroll-cue { bottom:2rem; color:#fff; opacity:.7; font-size:1.25rem; transition:opacity .25s; }
+.scroll-cue:hover { opacity:1; }
+
+/* Movie Cards */
+.movie-card { transition: transform .25s ease, box-shadow .25s ease; background:var(--app-surface)!important; }
+.movie-card:hover { transform: translateY(-4px); box-shadow:0 8px 28px -8px rgba(0,0,0,.65); }
+.movie-card img { display:block; }
+
+/* Genre Bar buttons override when active */
+#genreBar .btn-check:checked + label { background: var(--app-accent); border-color:var(--app-accent); color:#fff; }
+#genreBar label { cursor:pointer; }
+
+/* Watch Later Offcanvas */
+#watchLaterList .wl-item { border-bottom:1px solid rgba(255,255,255,.08); padding:.5rem 0; }
+#watchLaterList .wl-item:last-child { border-bottom:none; }
+
+/* Utilities */
+.text-truncate-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.logo-square { width:38px;height:38px; }
+
+@media (max-width: 576px) {
+    .hero-fade { height:40vh; }
+}

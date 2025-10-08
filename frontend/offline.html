@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Explorer Dashboard - Offline Mode</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --card-hover-transform: translateY(-8px);
+            --hero-overlay-opacity: 0.7;
+        }
+
+        body {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .hero {
+            min-height: 80vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-overlay {
+            background: rgba(0, 0, 0, var(--hero-overlay-opacity));
+        }
+
+        .hero-fade {
+            height: 20%;
+            background: linear-gradient(to top, #000, transparent);
+        }
+
+        .scroll-cue {
+            bottom: 20px;
+            color: white;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
+            40% { transform: translateY(-30px) translateX(-50%); }
+            60% { transform: translateY(-15px) translateX(-50%); }
+        }
+
+        .navbar {
+            background: linear-gradient(90deg, #1b1525, #171a27 60%, #12151b);
+        }
+
+        .logo-square {
+            width: 32px;
+            height: 32px;
+        }
+
+        .movie-card {
+            transition: all 0.3s ease;
+        }
+
+        .movie-card:hover {
+            transform: var(--card-hover-transform);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        .wl-item {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .text-truncate-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="bg-black text-white m-0 d-flex flex-column min-vh-100">
+    <!-- Hero -->
+    <header class="hero position-relative w-100">
+        <img src="https://source.unsplash.com/featured/?movie,cinema,film" alt="Hero" class="w-100 h-100" style="object-fit:cover; object-position:center; display:block;" />
+        <div class="position-absolute top-0 start-0 w-100 h-100 hero-overlay"></div>
+        <div class="position-absolute bottom-0 start-0 w-100 hero-fade"></div>
+        <div class="position-absolute top-50 start-50 translate-middle text-center px-3" style="max-width:900px;">
+            <h1 class="fw-bold display-4 display-md-3 mb-3">Movie Explorer Dashboard<br><small class="fs-6 badge bg-warning">Offline Mode</small></h1>
+            <p class="fs-5 fs-md-4 mb-4">This is a standalone version using local data. For the full experience with MongoDB backend, follow the STARTUP_GUIDE.md</p>
+            <a href="#moviesSection" class="btn btn-primary me-2 px-4 py-2">Browse Movies</a>
+            <a href="#genres" class="btn btn-outline-light px-4 py-2">Genres</a>
+        </div>
+        <a href="#mainNav" class="scroll-cue position-absolute start-50 translate-middle-x text-decoration-none">
+            <i class="bi bi-chevron-double-down"></i>
+        </a>
+    </header>
+
+    <!-- Navbar -->
+    <nav id="mainNav" class="navbar navbar-expand-lg sticky-top shadow-sm">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand text-white fw-bold d-flex align-items-center gap-2" href="#">
+                <span class="logo-square bg-primary bg-gradient rounded-3 d-inline-flex align-items-center justify-content-center">
+                    <i class="bi bi-film fs-5 text-white"></i>
+                </span>
+                Movie Explorer
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navContent">
+                <form id="searchForm" class="ms-auto me-3 my-2 my-lg-0 d-flex" role="search" autocomplete="off">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-dark border-0 text-secondary"><i class="bi bi-search"></i></span>
+                        <input id="searchInput" class="form-control bg-dark border-0 text-white" type="search" placeholder="Search" aria-label="Search" />
+                    </div>
+                </form>
+                <div class="d-flex align-items-center gap-3">
+                    <button id="openWatchLater" class="btn btn-primary position-relative d-flex align-items-center gap-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#watchLaterPanel">
+                        <i class="bi bi-bookmark"></i>
+                        <span>Watch Later</span>
+                        <span id="watchLaterCount" class="badge text-bg-danger rounded-pill d-none">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-5 flex-grow-1">
+        <div class="alert alert-warning">
+            <h5><i class="bi bi-exclamation-triangle"></i> Offline Mode</h5>
+            <p class="mb-1">This is the offline version of the Movie Explorer Dashboard using local data.</p>
+            <p class="mb-0">For the full experience, please make sure MongoDB is running and start the backend server. See <code>STARTUP_GUIDE.md</code> for details.</p>
+        </div>
+        
+        <!-- Genres -->
+        <section id="genres" class="mb-5">
+            <h6 class="text-uppercase small fw-semibold mb-3">Filter by Genre</h6>
+            <div id="genreBar" class="d-flex flex-wrap gap-2" role="radiogroup" aria-label="Filter by Genre"></div>
+        </section>
+
+        <!-- Movies -->
+        <section id="moviesSection" class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <h4 class="fw-bold m-0">Movies</h4>
+                <div class="text-secondary small" id="moviesMeta"></div>
+            </div>
+            <div id="moviesGrid" class="row g-4"></div>
+        </section>
+
+        <!-- Search Results -->
+        <section id="searchResultsSection" class="mb-5 d-none">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <h4 class="fw-bold m-0">Search Results</h4>
+                <button id="clearSearch" class="btn btn-sm btn-outline-light">Clear</button>
+            </div>
+            <div id="searchResultsGrid" class="row g-4"></div>
+        </section>
+    </main>
+
+    <!-- Offcanvas Watch Later -->
+    <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="watchLaterPanel" aria-labelledby="watchLaterLabel">
+        <div class="offcanvas-header">
+            <h5 id="watchLaterLabel" class="offcanvas-title">Watch Later</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body small" id="watchLaterList">
+            <p class="text-secondary m-0">No movies saved yet.</p>
+        </div>
+    </div>
+
+    <footer class="py-5 border-top border-secondary-subtle mt-auto text-center small text-secondary">
+        <div class="container">&copy; <span id="yearSpan"></span> Movie Explorer Dashboard</div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sample in-memory data (no need for backend fetch in offline mode)
+        const movies = [
+            { id:1, title:"Inception", year:2010, rating:8.8, genre:"Action", poster:"https://m.media-amazon.com/images/I/51v5ZpFyaFL._AC_SY679_.jpg" },
+            { id:2, title:"Interstellar", year:2014, rating:8.6, genre:"Drama", poster:"https://m.media-amazon.com/images/I/91kFYg4fX3L._AC_SY679_.jpg" },
+            { id:3, title:"The Dark Knight", year:2008, rating:9.0, genre:"Action", poster:"https://m.media-amazon.com/images/I/51CbR7ZKS-L._AC_.jpg" },
+            { id:4, title:"Dune", year:2021, rating:8.1, genre:"Sci-Fi", poster:"https://m.media-amazon.com/images/I/81+Kx5qQy-L._AC_SY679_.jpg" },
+            { id:5, title:"Avatar", year:2009, rating:7.8, genre:"Sci-Fi", poster:"https://m.media-amazon.com/images/I/51k0qa6qW-L._AC_SY679_.jpg" },
+            { id:6, title:"Joker", year:2019, rating:8.4, genre:"Drama", poster:"https://m.media-amazon.com/images/I/71Kk5hQmsjL._AC_SY679_.jpg" },
+            { id:7, title:"Tenet", year:2020, rating:7.4, genre:"Action", poster:"https://m.media-amazon.com/images/I/81q1wC6vKgL._AC_SY679_.jpg" },
+            { id:8, title:"Oppenheimer", year:2023, rating:8.6, genre:"Drama", poster:"https://m.media-amazon.com/images/I/81N1oynxH-L._AC_SY679_.jpg" },
+            { id:9, title:"Blade Runner 2049", year:2017, rating:8.0, genre:"Sci-Fi", poster:"https://m.media-amazon.com/images/I/71m4Zzv3H1L._AC_SY679_.jpg" },
+            { id:10, title:"The Matrix", year:1999, rating:8.7, genre:"Sci-Fi", poster:"https://m.media-amazon.com/images/I/51vpnbwFHrL._AC_SY679_.jpg" },
+            { id:11, title:"Whiplash", year:2014, rating:8.5, genre:"Drama", poster:"https://m.media-amazon.com/images/I/71xZ6VQ0u4L._AC_SY679_.jpg" },
+            { id:12, title:"Guardians of the Galaxy", year:2014, rating:8.1, genre:"Comedy", poster:"https://m.media-amazon.com/images/I/81kA7HqZ5-L._AC_SY679_.jpg" }
+        ];
+
+        // Generate genres from movies array
+        const allGenres = movies.map(m => m.genre);
+        const genres = ["All", ...new Set(allGenres)].filter(Boolean);
+        let activeGenre = "All";
+        let watchLater = new Set();
+
+        const els = {};
+
+        // Poster fallback logic
+        const GENRE_COLORS = {
+            'Action': 'dc3545',
+            'Drama': '6c757d',
+            'Comedy': 'ffc107',
+            'Sci-Fi': '0dcaf0',
+            'Unknown': '343a40'
+        };
+
+        function resolvePoster(m) {
+            if (m.poster && m.poster.trim()) return m.poster;
+            const title = (m.title || m.name || 'Movie').slice(0, 18);
+            const genre = (m.genre || m.Type || 'Unknown');
+            const color = GENRE_COLORS[genre] || '6610f2';
+            return `https://placehold.co/300x450/${color}/ffffff?text=${encodeURIComponent(title)}`;
+        }
+
+        function cacheEls() {
+            els.genreBar = document.getElementById('genreBar');
+            els.moviesGrid = document.getElementById('moviesGrid');
+            els.moviesMeta = document.getElementById('moviesMeta');
+            els.searchForm = document.getElementById('searchForm');
+            els.searchInput = document.getElementById('searchInput');
+            els.searchResultsSection = document.getElementById('searchResultsSection');
+            els.searchResultsGrid = document.getElementById('searchResultsGrid');
+            els.clearSearch = document.getElementById('clearSearch');
+            els.watchLaterCount = document.getElementById('watchLaterCount');
+            els.watchLaterList = document.getElementById('watchLaterList');
+            els.yearSpan = document.getElementById('yearSpan');
+            if (els.yearSpan) els.yearSpan.textContent = new Date().getFullYear();
+        }
+
+        function renderGenres() {
+            if (!els.genreBar) return;
+            els.genreBar.innerHTML = genres.map(g => `
+                <input type="radio" class="btn-check" name="genre" id="genre-${g}" ${g === activeGenre ? 'checked' : ''} autocomplete="off">
+                <label for="genre-${g}" class="btn btn-sm ${g === activeGenre ? 'btn-primary' : 'btn-outline-secondary'} rounded-pill px-3">${g}</label>
+            `).join('');
+            els.genreBar.querySelectorAll('input').forEach(inp => {
+                inp.addEventListener('change', () => {
+                    activeGenre = inp.id.replace('genre-', '');
+                    updateMovies();
+                });
+            });
+        }
+
+        function cardTemplate(m) {
+            const id = m._id || m.id; // support both local seed & backend
+            const title = m.title || m.name || 'Untitled';
+            const genre = m.Type || m.genre || 'Unknown';
+            const year = m.year || '—';
+            const rating = m.rating || '—';
+            const poster = resolvePoster(m);
+            const bookmarked = watchLater.has(id);
+            return `<div class="col-6 col-md-4 col-lg-3">
+                <div class="card bg-dark border-0 rounded-4 h-100 overflow-hidden shadow-sm movie-card" data-id="${id}">
+                    <div class="position-relative">
+                        <img src="${poster}" alt="${title} poster" class="w-100" style="aspect-ratio:3/4;object-fit:cover;" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/300x450/444/ffffff?text=No+Image';">
+                        <button class="btn btn-sm btn-dark position-absolute top-0 end-0 m-2 watch-btn" aria-label="${bookmarked ? 'Remove from' : 'Add to'} Watch Later">
+                            <i class="bi ${bookmarked ? 'bi-bookmark-fill text-warning' : 'bi-bookmark'}"></i>
+                        </button>
+                    </div>
+                    <div class="card-body small">
+                        <h6 class="card-title mb-1 text-truncate">${title}</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-secondary">${year}</span>
+                            <span class="text-warning d-flex align-items-center gap-1"><i class="bi bi-star-fill"></i>${rating}</span>
+                        </div>
+                        <div class="text-secondary small mt-1">${genre}</div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function filterList(base) {
+            const q = els.searchInput.value.trim().toLowerCase();
+            return base.filter(m => {
+                const genreVal = m.genre || m.Type;
+                const titleVal = (m.title || m.name || '').toLowerCase();
+                const gOk = activeGenre === 'All' || genreVal === activeGenre;
+                const qOk = !q || titleVal.includes(q) || (genreVal && genreVal.toLowerCase().includes(q));
+                return gOk && qOk;
+            });
+        }
+
+        function updateMovies() {
+            const list = filterList(movies);
+            els.moviesGrid.innerHTML = list.map(cardTemplate).join('') || `<div class="text-secondary fst-italic">No matches.</div>`;
+            els.moviesMeta.textContent = list.length + ' shown';
+            bindCardButtons(els.moviesGrid);
+        }
+
+        function bindCardButtons(scope) {
+            scope.querySelectorAll('.watch-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const rawId = btn.closest('.movie-card').dataset.id;
+                    toggleWatchLater(rawId);
+                });
+            });
+        }
+
+        function toggleWatchLater(id) {
+            if (watchLater.has(id)) watchLater.delete(id); else watchLater.add(id);
+            updateMovies();
+            renderWatchLater();
+            persistWatchLater();
+        }
+
+        function persistWatchLater() {
+            try { localStorage.setItem('watchLaterIds', JSON.stringify([...watchLater])); } catch { }
+        }
+
+        function loadWatchLater() {
+            try {
+                const raw = JSON.parse(localStorage.getItem('watchLaterIds') || '[]');
+                watchLater = new Set(raw);
+            } catch { watchLater = new Set(); }
+        }
+
+        function renderWatchLater() {
+            const list = [...watchLater]
+                .map(id => movies.find(m => (m._id || m.id) == id))
+                .filter(Boolean);
+            if (!list.length) {
+                els.watchLaterList.innerHTML = '<p class="text-secondary m-0">No movies saved yet.</p>';
+            } else {
+                els.watchLaterList.innerHTML = list.map(m => `<div class="wl-item d-flex align-items-center gap-2">
+                    <img src="${resolvePoster(m)}" alt="${m.title || m.name}" style="width:40px;height:56px;object-fit:cover;" class="rounded" onerror="this.onerror=null;this.src='https://placehold.co/80x112/444/ffffff?text=No';">
+                    <div class="flex-grow-1">
+                        <div class="fw-semibold small mb-1">${m.title || m.name}</div>
+                        <div class="text-secondary small">${m.year || '—'} · ${(m.genre || m.Type || 'Unknown')}</div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-light remove-wl" data-id="${m._id || m.id}"><i class="bi bi-x"></i></button>
+                </div>`).join('');
+                els.watchLaterList.querySelectorAll('.remove-wl').forEach(b => {
+                    b.addEventListener('click', () => { toggleWatchLater(b.dataset.id); });
+                });
+            }
+            updateWatchLaterBadge();
+        }
+
+        function updateWatchLaterBadge() {
+            const c = watchLater.size;
+            els.watchLaterCount.textContent = c;
+            els.watchLaterCount.classList.toggle('d-none', c === 0);
+        }
+
+        function handleSearch(e) {
+            e.preventDefault();
+            const q = els.searchInput.value.trim();
+            if (!q) {
+                els.searchResultsSection.classList.add('d-none');
+                updateMovies();
+                return;
+            }
+            const resLocal = movies.filter(m => {
+                const titleVal = (m.title || m.name || '').toLowerCase();
+                const genreVal = (m.genre || m.Type || '').toLowerCase();
+                return titleVal.includes(q.toLowerCase()) || genreVal.includes(q.toLowerCase());
+            });
+            els.searchResultsGrid.innerHTML = resLocal.map(cardTemplate).join('') || '<div class="text-secondary fst-italic">No results.</div>';
+            bindCardButtons(els.searchResultsGrid);
+            els.searchResultsSection.classList.remove('d-none');
+            updateMovies();
+        }
+
+        function clearSearch() {
+            els.searchInput.value = '';
+            els.searchResultsSection.classList.add('d-none');
+            updateMovies();
+        }
+
+        function init() {
+            cacheEls();
+            loadWatchLater();
+            renderGenres();
+            updateMovies();
+            renderWatchLater();
+            if (els.searchForm) els.searchForm.addEventListener('submit', handleSearch);
+            if (els.searchInput) els.searchInput.addEventListener('input', e => { if (!e.target.value) clearSearch(); });
+            if (els.clearSearch) els.clearSearch.addEventListener('click', clearSearch);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
